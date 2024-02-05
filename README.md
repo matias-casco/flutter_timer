@@ -1,6 +1,6 @@
 # flutter_timer
 
-A new Flutter project.
+Bloc example project using Clean Architecture.
 
 ## Getting Started
 
