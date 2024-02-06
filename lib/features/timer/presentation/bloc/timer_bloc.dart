@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_timer/core/usecases/usecase.dart';
+import 'package:flutter_timer/features/timer/domain/entities/duration_entity.dart';
 import 'package:flutter_timer/features/timer/domain/usecases/get_value_usecase.dart';
 
 part 'timer_event.dart';
@@ -10,8 +10,8 @@ part 'timer_state.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final GetValueUseCase getValueUseCase;
-  //final Ticker _ticker;
   static const int _duration = 60;
+  StreamSubscription<int>? _tickerSubscription;
 
   TimerBloc({required this.getValueUseCase})
       : super(const TimerInitial(_duration)) {
@@ -24,27 +24,50 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   @override
   Future<void> close() {
+    _tickerSubscription?.cancel();
     return super.close();
   }
 
-  void _onStarted(TimerStarted event, Emitter<TimerState> emit) {
+  Future<void> _onStarted(TimerStarted event, Emitter<TimerState> emit) async {
     emit(TimerRunInProgress(event.duration));
-    final eitherResult = getValueUseCase.call(NoParams());
+
+    _tickerSubscription?.cancel();
+    _tickerSubscription = null;
+
+    final eitherResult =
+        await getValueUseCase(const DurationEntity(duration: _duration));
+    eitherResult.fold(
+      (error) {
+        emit(TimerRunPause(state.duration));
+      },
+      (success) {
+        print('success');
+        _tickerSubscription = success.listen(
+          (value) {
+            print('mi value $value');
+            add(_TimerTicked(duration: value));
+          },
+        );
+      },
+    );
   }
 
   void _onPaused(TimerPaused event, Emitter<TimerState> emit) {
     if (state is TimerRunInProgress) {
+      _tickerSubscription?.pause();
       emit(TimerRunPause(state.duration));
     }
   }
 
   void _onResumed(TimerResumed event, Emitter<TimerState> emit) {
     if (state is TimerRunPause) {
+      _tickerSubscription?.resume();
       emit(TimerRunInProgress(state.duration));
     }
   }
 
   void _onReset(TimerReset event, Emitter<TimerState> emit) {
+    _tickerSubscription?.cancel();
     emit(const TimerInitial(_duration));
   }
 
