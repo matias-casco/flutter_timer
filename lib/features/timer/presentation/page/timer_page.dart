@@ -12,6 +12,7 @@ class TimerPage extends StatelessWidget {
     return BlocProvider<TimerBloc>(
       create: (_) => sl<TimerBloc>(),
       child: const TimerView(),
+      //todo: bloc listener (mostrar showalert con mensaje de excepcion)
     );
   }
 }
