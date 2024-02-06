@@ -1,18 +1,22 @@
 import 'dart:async';
 
 abstract class TimerDataSource {
-  Stream<dynamic> getDuration(ticks);
+  Future<Stream<int>> getDuration(int ticks);
 }
 
 class TimerDataSourceImpl implements TimerDataSource {
   TimerDataSourceImpl();
 
   @override
-  Stream<dynamic> getDuration(ticks) {
-    final stream =
+  Future<Stream<int>> getDuration(int ticks) async {
+    final Stream<int> stream =
         Stream.periodic(const Duration(seconds: 1), (x) => ticks - x - 1)
             .take(ticks);
 
+    /*stream.listen((event) {
+      if (event == 30) throw Exception('Error, disculpe los inconvenientes.');
+      // mostrar pop up de error.. alert dialog class
+    });*/
     return stream;
   }
 }

@@ -9,9 +9,9 @@ class TimerRepositoryImpl implements TimerRepository {
   TimerRepositoryImpl({required this.timerDataSource});
 
   @override
-  Future<Either<Failure, Stream<dynamic>>> getValue(ticks) async {
+  Future<Either<Failure, Stream<int>>> getValue({required int ticks}) async {
     try {
-      final response = timerDataSource.getDuration(ticks);
+      final response = await timerDataSource.getDuration(ticks);
       return Right(response);
     } catch (e) {
       return Left(
