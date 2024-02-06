@@ -19,6 +19,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     on<TimerPaused>(_onPaused);
     on<TimerResumed>(_onResumed);
     on<TimerReset>(_onReset);
+    on<TimerFailed>(_onFailed);
     on<_TimerTicked>(_onTicked);
   }
 
@@ -41,11 +42,12 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
         emit(TimerRunPause(state.duration));
       },
       (success) {
-        print('success');
         _tickerSubscription = success.listen(
           (value) {
             print('mi value $value');
-            add(_TimerTicked(duration: value));
+            value == 55
+                ? add(TimerFailed(duration: value))
+                : add(_TimerTicked(duration: value));
           },
         );
       },
@@ -53,10 +55,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   void _onPaused(TimerPaused event, Emitter<TimerState> emit) {
-    if (state is TimerRunInProgress) {
-      _tickerSubscription?.pause();
-      emit(TimerRunPause(state.duration));
-    }
+    _tickerSubscription?.pause();
+    emit(TimerRunPause(state.duration));
   }
 
   void _onResumed(TimerResumed event, Emitter<TimerState> emit) {
@@ -75,5 +75,10 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     emit(event.duration > 0
         ? TimerRunInProgress(event.duration)
         : const TimerRunComplete());
+  }
+
+  void _onFailed(TimerFailed event, Emitter<TimerState> emit) {
+    emit(TimerRunException(event.duration));
+    add(const TimerPaused());
   }
 }

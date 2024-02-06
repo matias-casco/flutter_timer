@@ -11,7 +11,31 @@ class TimerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<TimerBloc>(
       create: (_) => sl<TimerBloc>(),
-      child: const TimerView(),
+      child: BlocListener<TimerBloc, TimerState>(
+        listener: (context, state) {
+          // Check if the state is an exception state
+          if (state is TimerRunException) {
+            // Show AlertDialog or any other widget to display the exception message
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Error'),
+                content: const Text(
+                    'Error text'), // Assuming TimerExceptionState has a message field
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+        child: const TimerView(),
+      ),
       //todo: bloc listener (mostrar showalert con mensaje de excepcion)
     );
   }

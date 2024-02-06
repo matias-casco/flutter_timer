@@ -25,3 +25,8 @@ final class _TimerTicked extends TimerEvent {
   const _TimerTicked({required this.duration});
   final int duration;
 }
+
+final class TimerFailed extends TimerEvent {
+  const TimerFailed({required this.duration});
+  final int duration;
+}

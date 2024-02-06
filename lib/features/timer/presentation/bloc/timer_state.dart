@@ -32,3 +32,10 @@ final class TimerRunInProgress extends TimerState {
 final class TimerRunComplete extends TimerState {
   const TimerRunComplete() : super(0);
 }
+
+final class TimerRunException extends TimerState {
+  const TimerRunException(super.duration);
+
+  @override
+  String toString() => 'TimerRunException { duration: $duration }';
+}

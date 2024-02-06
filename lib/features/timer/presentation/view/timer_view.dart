@@ -21,9 +21,9 @@ class TimerView extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 100.0),
-                  child: Center(child: TimerText()),
+                  child: Center(child: _TimerText()),
                 ),
-                Actions(),
+                _Actions(),
               ]),
         ],
       ),
@@ -31,8 +31,8 @@ class TimerView extends StatelessWidget {
   }
 }
 
-class TimerText extends StatelessWidget {
-  const TimerText({Key? key}) : super(key: key);
+class _TimerText extends StatelessWidget {
+  const _TimerText({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +48,8 @@ class TimerText extends StatelessWidget {
   }
 }
 
-class Actions extends StatelessWidget {
-  const Actions({super.key});
+class _Actions extends StatelessWidget {
+  const _Actions({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +100,7 @@ class Actions extends StatelessWidget {
                         context.read<TimerBloc>().add(const TimerReset()),
                   ),
                 ],
+              TimerRunException() => []
             }
           ],
         );
